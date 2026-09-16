@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matilha Amiga · Fidelidade Pet Shop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F7F3EA;
+    --panel:#FFFFFF;
+    --ink:#1C2420;
+    --ink-soft:#5A6560;
+    --pine:#24433D;
+    --pine-deep:#152A26;
+    --amber:#D9A441;
+    --brick:#C1544B;
+    --line:#E4DCC9;
+    --stamp-empty:#EFE8D6;
+    --radius-s:6px;
+    --radius-m:14px;
+    --radius-l:26px;
+    --shadow: 0 1px 2px rgba(28,36,32,.06), 0 8px 24px -12px rgba(28,36,32,.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    letter-spacing:-.01em;
+    margin:0;
+    color:var(--pine-deep);
+  }
+  button{font-family:inherit;}
+  a{color:inherit;}
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible{
+    outline:3px solid var(--amber);
+    outline-offset:2px;
+  }
+  .hidden{display:none !important;}
+
+  /* ---------- AUTH SCREEN ---------- */
+  #view-auth{
+    min-height:100vh;
+    display:grid;
+    grid-template-columns: 1.1fr 1fr;
+  }
+  @media (max-width:860px){
+    #view-auth{grid-template-columns:1fr;}
+  }
+  .auth-hero{
+    background:var(--pine);
+    color:#F4EFE1;
+    padding:56px 48px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    position:relative;
+    overflow:hidden;
+  }
+  .auth-hero::after{
+    content:"";
+    position:absolute;
+    right:-60px; bottom:-60px;
+    width:320px; height:320px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(217,164,65,.25), transparent 70%);
+  }
+  .brand{
+    display:flex; align-items:center; gap:12px;
+    font-family:'Fraunces',serif; font-size:22px; font-weight:600;
+  }
+  .brand-mark{
+    width:38px;height:38px;border-radius:50%;
+    background:var(--amber);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--pine-deep); font-size:18px;
+  }
+  .auth-hero .headline{
+    font-size:clamp(30px, 4vw, 46px);
+    line-height:1.08;
+    max-width:9.5em;
+    color:#FBF7EC;
+  }
+  .auth-hero .sub{
+    max-width:38ch;
+    color:#D7E0D2;
+    font-size:15px;
+  }
+  .stamp-row{display:flex; gap:10px; margin-top:28px;}
+  .stamp{
+    width:34px;height:34px;border-radius:50%;
+    border:1.5px dashed rgba(244,239,225,.45);
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px;
+  }
+  .stamp.on{ background:var(--amber); border-style:solid; border-color:var(--amber); color:var(--pine-deep);}
+  .auth-panel{
+    display:flex; align-items:center; justify-content:center;
+    padding:40px 28px;
+  }
+  .auth-card{
+    width:100%; max-width:380px;
+  }
+  .tabbar{
+    display:flex; border-bottom:1px solid var(--line); margin-bottom:26px;
+  }
+  .tabbar button{
+    flex:1; background:none; border:none; padding:10px 0 14px;
+    font-size:15px; color:var(--ink-soft); cursor:pointer;
+    border-bottom:2px solid transparent;
+  }
+  .tabbar button.active{ color:var(--pine-deep); border-color:var(--pine); font-weight:600;}
+  .field{ margin-bottom:16px; }
+  .field label{ display:block; font-size:13px; color:var(--ink-soft); margin-bottom:6px;}
+  .field input, .field select, .field textarea{
+    width:100%; padding:11px 13px; border-radius:var(--radius-s);
+    border:1px solid var(--line); background:var(--panel);
+    font-size:15px; color:var(--ink);
+  }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:12px 20px; border-radius:999px; border:none;
+    background:var(--pine); color:#F7F3EA;
+    font-size:15px; font-weight:600; cursor:pointer;
+    transition:transform .12s ease, background .15s ease;
+  }
+  .btn:hover{ background:var(--pine-deep); }
+  .btn:active{ transform:scale(.98); }
+  .btn.block{ width:100%; }
+  .btn.ghost{ background:transparent; color:var(--pine); border:1.5px solid var(--pine); }
+  .btn.ghost:hover{ background:var(--pine); color:#fff; }
+  .btn.amber{ background:var(--amber); color:var(--pine-deep); }
+  .btn.amber:hover{ background:#c8933a; }
+  .btn.small{ padding:8px 14px; font-size:13px; }
+  .btn:disabled{ opacity:.45; cursor:not-allowed; }
+  .form-msg{ font-size:13px; margin-top:10px; min-height:18px; }
+  .form-msg.err{ color:var(--brick); }
+  .form-msg.ok{ color:var(--pine); }
+
+  /* ---------- APP SHELL ---------- */
+  #view-app{ display:flex; min-height:100vh; }
+  .sidebar{
+    width:236px; background:var(--pine-deep); color:#EFE8D6;
+    display:flex; flex-direction:column; padding:26px 18px;
+    position:sticky; top:0; height:100vh;
+  }
+  .sidebar .brand{ padding:0 8px 26px; color:#F4EFE1; }
+  .nav-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:2px; flex:1; }
+  .nav-item{
+    display:flex; align-items:center; gap:12px;
+    padding:11px 12px; border-radius:var(--radius-s);
+    cursor:pointer; font-size:14.5px; color:#CFD8C9;
+    border:none; background:none; width:100%; text-align:left;
+  }
+  .nav-item .ic{ font-size:17px; width:20px; text-align:center; }
+  .nav-item:hover{ background:rgba(244,239,225,.06); color:#F4EFE1; }
+  .nav-item.active{ background:rgba(217,164,65,.16); color:#F4EFE1; font-weight:600; }
+  .sidebar-foot{
+    border-top:1px solid rgba(244,239,225,.12); padding-top:14px; margin-top:10px;
+    font-size:13px; color:#AEB8A8;
+  }
+  .sidebar-foot .who{ color:#F4EFE1; font-weight:600; display:block; margin-bottom:8px;}
+
+  .main{ flex:1; min-width:0; }
+  .topbar{
+    display:none;
+    align-items:center; justify-content:space-between;
+    padding:14px 18px; background:var(--pine-deep); color:#F4EFE1;
+    position:sticky; top:0; z-index:5;
+  }
+  .content{ padding:34px 40px 100px; max-width:1080px; }
+  @media (max-width:900px){
+    .sidebar{ display:none; }
+    .topbar{ display:flex; }
+    .content{ padding:22px 18px 96px; }
+  }
+
+  .page-head{ margin-bottom:26px; }
+  .page-head .eyebrow{ color:var(--brick); font-size:13px; font-weight:600; margin-bottom:6px; }
+  .page-head h2{ font-size:28px; }
+  .page-head p{ color:var(--ink-soft); margin-top:6px; max-width:56ch; font-size:14.5px; }
+
+  .grid{ display:grid; gap:18px; }
+  .grid.cols-3{ grid-template-columns:repeat(3,1fr); }
+  .grid.cols-2{ grid-template-columns:repeat(2,1fr); }
+  @media (max-width:760px){ .grid.cols-3, .grid.cols-2{ grid-template-columns:1fr; } }
+
+  .card{
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:var(--radius-m); padding:20px;
+  }
+  .stat-card .num{ font-family:'Fraunces',serif; font-size:34px; color:var(--pine-deep); }
+  .stat-card .label{ color:var(--ink-soft); font-size:13.5px; margin-top:2px; }
+  .stat-card .ic-badge{
+    width:38px;height:38px;border-radius:50%;
+    background:var(--stamp-empty); display:flex;align-items:center;justify-content:center;
+    font-size:17px; margin-bottom:14px;
+  }
+
+  .quick-actions{ display:flex; gap:12px; flex-wrap:wrap; margin-top:22px; }
+
+  /* pets */
+  .pet-card{ display:flex; gap:14px; align-items:flex-start; }
+  .pet-avatar{
+    width:52px;height:52px;border-radius:50%;
+    background:var(--amber); color:var(--pine-deep);
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px; flex-shrink:0;
+  }
+  .pet-name{ font-family:'Fraunces',serif; font-size:18px; color:var(--pine-deep); }
+  .pet-meta{ color:var(--ink-soft); font-size:13.5px; margin-top:2px; }
+  .pet-actions{ display:flex; gap:8px; margin-top:12px; }
+  .empty-state{
+    border:1.5px dashed var(--line); border-radius:var(--radius-m);
+    padding:40px 20px; text-align:center; color:var(--ink-soft);
+  }
+
+  /* loyalty stamp card */
+  .loyalty-card{
+    background:var(--pine); color:#F4EFE1; border-radius:var(--radius-l);
+    padding:28px; position:relative; overflow:hidden;
+  }
+  .loyalty-card::after{
+    content:""; position:absolute; right:-40px; top:-40px; width:180px;height:180px;
+    border-radius:50%; background:radial-gradient(circle, rgba(217,164,65,.28), transparent 70%);
+  }
+  .loyalty-points{ font-family:'Fraunces',serif; font-size:46px; }
+  .stamp-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:20px; max-width:320px; }
+  .stamp-cell{
+    aspect-ratio:1; border-radius:50%; border:1.5px dashed rgba(244,239,225,.4);
+    display:flex; align-items:center; justify-content:center; font-size:16px;
+  }
+  .stamp-cell.on{ background:var(--amber); border-style:solid; border-color:var(--amber); color:var(--pine-deep); }
+
+  .earn-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px; }
+  .earn-list li{ display:flex; justify-content:space-between; font-size:14px; padding:10px 0; border-bottom:1px solid var(--line); }
+  .earn-list li:last-child{ border-bottom:none; }
+
+  /* benefits */
+  .benefit-card{ display:flex; flex-direction:column; height:100%; }
+  .benefit-cost{
+    display:inline-flex; align-self:flex-start; align-items:center; gap:6px;
+    background:var(--stamp-empty); color:var(--pine-deep);
+    padding:5px 11px; border-radius:999px; font-size:13px; font-weight:600; margin-bottom:12px;
+  }
+  .benefit-card p{ color:var(--ink-soft); font-size:13.5px; flex:1; }
+
+  /* history */
+  .history-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:14px 4px; border-bottom:1px solid var(--line); gap:12px;
+  }
+  .history-row:last-child{ border-bottom:none; }
+  .history-main .h-title{ font-weight:600; font-size:14.5px; }
+  .history-main .h-sub{ color:var(--ink-soft); font-size:13px; margin-top:2px; }
+  .history-points{ font-size:13.5px; font-weight:600; color:var(--pine); white-space:nowrap; }
+  .history-points.neg{ color:var(--brick); }
+
+  /* tips */
+  .tip-card .ic{ font-size:22px; margin-bottom:10px; display:block; }
+  .tip-card h3{ font-size:16.5px; margin-bottom:6px; }
+  .tip-card p{ color:var(--ink-soft); font-size:13.5px; }
+
+  /* about */
+  .about-row{ display:flex; gap:14px; padding:12px 0; border-bottom:1px solid var(--line); }
+  .about-row:last-child{ border-bottom:none; }
+  .about-row .ic{ width:28px; font-size:17px; }
+  .about-row .t{ font-weight:600; font-size:14.5px; }
+  .about-row .d{ color:var(--ink-soft); font-size:13.5px; }
+
+  /* modal */
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(21,42,38,.5);
+    display:flex; align-items:flex-end; justify-content:center;
+    z-index:50; padding:0;
+  }
+  @media (min-width:640px){ .modal-backdrop{ align-items:center; padding:20px; } }
+  .modal{
+    background:var(--panel); width:100%; max-width:480px;
+    border-radius:var(--radius-l) var(--radius-l) 0 0;
+    padding:26px 24px 30px; max-height:90vh; overflow-y:auto;
+  }
+  @media (min-width:640px){ .modal{ border-radius:var(--radius-l); } }
+  .modal-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+  .modal-close{ background:none; border:none; font-size:20px; cursor:pointer; color:var(--ink-soft); line-height:1; padding:4px;}
+  .row-2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+  /* mobile bottom nav */
+  .bottom-nav{
+    display:none;
+    position:fixed; bottom:0; left:0; right:0;
+    background:var(--panel); border-top:1px solid var(--line);
+    padding:8px 4px 10px; z-index:20;
+    justify-content:space-around;
+  }
+  .bottom-nav button{
+    background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:3px;
+    font-size:10.5px; color:var(--ink-soft); cursor:pointer; padding:4px 6px;
+  }
+  .bottom-nav button .ic{ font-size:19px; }
+  .bottom-nav button.active{ color:var(--pine); font-weight:600; }
+  @media (max-width:900px){ .bottom-nav{ display:flex; } }
+
+  .toast{
+    position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
+    background:var(--pine-deep); color:#F4EFE1; padding:12px 20px;
+    border-radius:999px; font-size:13.5px; box-shadow:var(--shadow);
+    z-index:80; opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(-6px); }
+  @media (min-width:900px){ .toast{ bottom:26px; } }
+</style>
+</head>
+<body>
+
+<!-- ============ AUTH ============ -->
+<div id="view-auth">
+  <div class="auth-hero">
+    <div class="brand"><span class="brand-mark">🐾</span> Matilha Amiga</div>
+    <div>
+      <h1 class="headline">Cada visita conta. Cada pet ganha.</h1>
+      <p class="sub">Cadastre seus pets, acompanhe o histórico de atendimentos e troque pontos por benefícios no seu pet shop de confiança.</p>
+      <div class="stamp-row" aria-hidden="true">
+        <div class="stamp on">🐾</div><div class="stamp on">🐾</div><div class="stamp on">🐾</div>
+        <div class="stamp">4</div><div class="stamp">5</div>
+      </div>
+    </div>
+    <div class="sub" style="font-size:13px;">Programa de fidelidade · Matilha Amiga Pet Shop</div>
+  </div>
+
+  <div class="auth-panel">
+    <div class="auth-card">
+      <div class="tabbar">
+        <button id="tab-login" class="active" onclick="switchAuthTab('login')">Entrar</button>
+        <button id="tab-signup" onclick="switchAuthTab('signup')">Criar conta</button>
+      </div>
+
+      <form id="form-login" onsubmit="return handleLogin(event)">
+        <div class="field">
+          <label for="login-email">E-mail</label>
+          <input id="login-email" type="email" required placeholder="voce@email.com">
+        </div>
+        <div class="field">
+          <label for="login-pass">Senha</label>
+          <input id="login-pass" type="password" required placeholder="••••••••">
+        </div>
+        <button class="btn block" type="submit">Entrar</button>
+        <div id="login-msg" class="form-msg err"></div>
+        <p style="font-size:12.5px;color:var(--ink-soft);margin-top:14px;">Dica: crie uma conta na aba "Criar conta" — os dados ficam salvos neste navegador.</p>
+      </form>
+
+      <form id="form-signup" class="hidden" onsubmit="return handleSignup(event)">
+        <div class="field">
+          <label for="signup-name">Nome do tutor</label>
+          <input id="signup-name" type="text" required placeholder="Seu nome completo">
+        </div>
+        <div class="field">
+          <label for="signup-email">E-mail</label>
+          <input id="signup-email" type="email" required placeholder="voce@email.com">
+        </div>
+        <div class="field">
+          <label for="signup-phone">Telefone / WhatsApp</label>
+          <input id="signup-phone" type="tel" required placeholder="(31) 90000-0000">
+        </div>
+        <div class="field">
+          <label for="signup-pass">Senha</label>
+          <input id="signup-pass" type="password" required minlength="4" placeholder="Mínimo 4 caracteres">
+        </div>
+        <button class="btn block" type="submit">Criar conta e entrar</button>
+        <div id="signup-msg" class="form-msg err"></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="view-app" class="hidden">
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark">🐾</span> Matilha Amiga</div>
+    <ul class="nav-list" id="nav-list"></ul>
+    <div class="sidebar-foot">
+      <span class="who" id="sidebar-who">—</span>
+      <button class="btn ghost small" style="width:100%;" onclick="logout()">Sair</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="brand" style="font-size:17px;"><span class="brand-mark" style="width:30px;height:30px;font-size:15px;">🐾</span> Matilha Amiga</div>
+      <button class="btn ghost small" onclick="logout()">Sair</button>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<div class="bottom-nav" id="bottom-nav"></div>
+<div id="toast" class="toast"></div>
+
+<script>
+/* ==========================================================
+   MATILHA AMIGA — Front-end do sistema de fidelidade
+   Persistência: localStorage (demonstração/protótipo funcional).
+   Para produção real, troque o objeto DB por chamadas a uma API.
+   ========================================================== */
+
+const DB_KEY = 'matilha_amiga_db_v1';
+const SESSION_KEY = 'matilha_amiga_session_v1';
+
+const SPECIES_ICON = { 'Cachorro':'🐶', 'Gato':'🐱', 'Outro':'🐾' };
+
+const BENEFITS = [
+  { id:'b1', title:'Banho com 20% de desconto', cost:80, desc:'Válido para banho simples ou completo, em qualquer porte de pet.' },
+  { id:'b2', title:'Tosa higiênica grátis', cost:120, desc:'Uma tosa higiênica cortesia para o pet de sua escolha.' },
+  { id:'b3', title:'Brinde surpresa para o pet', cost:60, desc:'Brinquedo ou petisco selecionado pela nossa equipe.' },
+  { id:'b4', title:'Consulta veterinária com 15% off', cost:150, desc:'Desconto em consulta de rotina com nossos veterinários parceiros.' },
+  { id:'b5', title:'Pacote banho + tosa completo', cost:220, desc:'Combo completo de banho e tosa, com hidratação inclusa.' },
+  { id:'b6', title:'Ração porte pequeno (amostra 1kg)', cost:100, desc:'Amostra de ração premium para pets de porte pequeno.' },
+];
+
+const TIPS = [
+  { ic:'🦴', title:'Alimentação na medida certa', text:'Respeite a quantidade indicada na embalagem conforme o peso do pet e evite trocar de ração com frequência.' },
+  { ic:'🛁', title:'Banhos com espaçamento correto', text:'Cães de pelo curto: a cada 2–3 semanas. Gatos raramente precisam de banho — converse com a equipe antes.' },
+  { ic:'💉', title:'Vacinas e vermífugos em dia', text:'Mantenha a carteirinha atualizada e agende reforços com antecedência pelo histórico do app.' },
+  { ic:'🦷', title:'Saúde bucal', text:'Escovar os dentes 2–3x por semana previne tártaro e mau hálito no seu pet.' },
+  { ic:'🌡️', title:'Atenção aos dias quentes', text:'Evite passeios em horários de sol forte e sempre deixe água fresca disponível.' },
+  { ic:'✂️', title:'Unhas e patas', text:'Unhas compridas incomodam a caminhada — cortes regulares evitam lesões e desconforto.' },
+];
+
+/* ---------------- DB helpers ---------------- */
+function loadDB(){
+  const raw = localStorage.getItem(DB_KEY);
+  if(raw) return JSON.parse(raw);
+  const fresh = { users: [] };
+  localStorage.setItem(DB_KEY, JSON.stringify(fresh));
+  return fresh;
+}
+function saveDB(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+function getSession(){ return localStorage.getItem(SESSION_KEY); }
+function setSession(email){ localStorage.setItem(SESSION_KEY, email); }
+function clearSession(){ localStorage.removeItem(SESSION_KEY); }
+
+function currentUser(){
+  const db = loadDB();
+  const email = getSession();
+  return db.users.find(u => u.email === email) || null;
+}
+function updateCurrentUser(mutateFn){
+  const db = loadDB();
+  const email = getSession();
+  const idx = db.users.findIndex(u => u.email === email);
+  if(idx === -1) return;
+  mutateFn(db.users[idx]);
+  saveDB(db);
+}
+
+/* ---------------- Seed helper for a brand-new account ---------------- */
+function seedAccount(user){
+  user.pets = [];
+  user.points = 40;
+  user.history = [
+    { id:cryptoId(), date: daysAgo(21), petName:'—', service:'Bônus de boas-vindas', points:40 }
+  ];
+  user.redemptions = [];
+}
+
+function cryptoId(){ return 'id_' + Math.random().toString(36).slice(2,10); }
+function daysAgo(n){
+  const d = new Date();
+  d.setDate(d.getDate()-n);
+  return d.toISOString().slice(0,10);
+}
+function formatDate(iso){
+  const [y,m,d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+/* ---------------- AUTH ---------------- */
+function switchAuthTab(which){
+  document.getElementById('tab-login').classList.toggle('active', which==='login');
+  document.getElementById('tab-signup').classList.toggle('active', which==='signup');
+  document.getElementById('form-login').classList.toggle('hidden', which!=='login');
+  document.getElementById('form-signup').classList.toggle('hidden', which!=='signup');
+}
+
+function handleLogin(e){
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const pass = document.getElementById('login-pass').value;
+  const db = loadDB();
+  const user = db.users.find(u => u.email === email && u.password === pass);
+  const msg = document.getElementById('login-msg');
+  if(!user){
+    msg.textContent = 'E-mail ou senha incorretos. Verifique ou crie uma conta.';
+    msg.className = 'form-msg err';
+    return false;
+  }
+  setSession(email);
+  boot();
+  return false;
+}
+
+function handleSignup(e){
+  e.preventDefault();
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim().toLowerCase();
+  const phone = document.getElementById('signup-phone').value.trim();
+  const pass = document.getElementById('signup-pass').value;
+  const msg = document.getElementById('signup-msg');
+
+  const db = loadDB();
+  if(db.users.some(u => u.email === email)){
+    msg.textContent = 'Já existe uma conta com esse e-mail. Tente entrar.';
+    msg.className = 'form-msg err';
+    return false;
+  }
+  const user = { name, email, phone, password:pass };
+  seedAccount(user);
+  db.users.push(user);
+  saveDB(db);
+  setSession(email);
+  boot();
+  return false;
+}
+
+function logout(){
+  clearSession();
+  location.reload();
+}
+
+/* ---------------- NAV ---------------- */
+const PAGES = [
+  { id:'dashboard', label:'Início', ic:'🏠' },
+  { id:'pets', label:'Meus Pets', ic:'🐾' },
+  { id:'history', label:'Histórico', ic:'📋' },
+  { id:'loyalty', label:'Fidelidade', ic:'⭐' },
+  { id:'benefits', label:'Benefícios', ic:'🎁' },
+  { id:'tips', label:'Dicas', ic:'💡' },
+  { id:'about', label:'Pet Shop', ic:'📍' },
+];
+let activePage = 'dashboard';
+
+function buildNav(){
+  const navList = document.getElementById('nav-list');
+  const bottomNav = document.getElementById('bottom-nav');
+  navList.innerHTML = '';
+  bottomNav.innerHTML = '';
+  PAGES.forEach(p=>{
+    const li = document.createElement('li');
+    const btn = document.createElement('button');
+    btn.className = 'nav-item' + (p.id===activePage ? ' active':'');
+    btn.innerHTML = `<span class="ic">${p.ic}</span> ${p.label}`;
+    btn.onclick = ()=> goTo(p.id);
+    li.appendChild(btn);
+    navList.appendChild(li);
+
+    const bbtn = document.createElement('button');
+    bbtn.className = p.id===activePage ? 'active' : '';
+    bbtn.innerHTML = `<span class="ic">${p.ic}</span>${p.label}`;
+    bbtn.onclick = ()=> goTo(p.id);
+    bottomNav.appendChild(bbtn);
+  });
+}
+
+function goTo(page){
+  activePage = page;
+  buildNav();
+  render();
+}
+
+/* ---------------- TOAST ---------------- */
+let toastTimer;
+function showToast(text){
+  const t = document.getElementById('toast');
+  t.textContent = text;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 2600);
+}
+
+/* ---------------- RENDER ROUTER ---------------- */
+function render(){
+  const user = currentUser();
+  if(!user) return;
+  document.getElementById('sidebar-who').textContent = user.name;
+  const c = document.getElementById('content');
+  if(activePage==='dashboard') c.innerHTML = renderDashboard(user);
+  else if(activePage==='pets') c.innerHTML = renderPets(user);
+  else if(activePage==='history') c.innerHTML = renderHistory(user);
+  else if(activePage==='loyalty') c.innerHTML = renderLoyalty(user);
+  else if(activePage==='benefits') c.innerHTML = renderBenefits(user);
+  else if(activePage==='tips') c.innerHTML = renderTips();
+  else if(activePage==='about') c.innerHTML = renderAbout();
+}
+
+/* ---------------- DASHBOARD ---------------- */
+function renderDashboard(user){
+  const firstName = user.name.split(' ')[0];
+  const nextBenefit = BENEFITS.slice().sort((a,b)=>a.cost-b.cost).find(b=>b.cost>user.points);
+  return `
+    <div class="page-head">
+      <div class="eyebrow">Início</div>
+      <h2>Olá, ${firstName} 👋</h2>
+      <p>Aqui está um resumo da sua conta no Matilha Amiga.</p>
+    </div>
+    <div class="grid cols-3">
+      <div class="card stat-card">
+        <div class="ic-badge">⭐</div>
+        <div class="num">${user.points}</div>
+        <div class="label">pontos de fidelidade</div>
+      </div>
+      <div class="card stat-card">
+        <div class="ic-badge">🐾</div>
+        <div class="num">${user.pets.length}</div>
+        <div class="label">pet(s) cadastrado(s)</div>
+      </div>
+      <div class="card stat-card">
+        <div class="ic-badge">📋</div>
+        <div class="num">${user.history.length}</div>
+        <div class="label">registros no histórico</div>
+      </div>
+    </div>
+
+    ${nextBenefit ? `
+    <div class="card" style="margin-top:18px;">
+      <strong style="font-size:14.5px;">Próxima recompensa ao seu alcance</strong>
+      <p style="color:var(--ink-soft);font-size:13.5px;margin:6px 0 0;">
+        Faltam <strong>${nextBenefit.cost - user.points} pontos</strong> para resgatar "${nextBenefit.title}".
+      </p>
+    </div>` : ''}
+
+    <div class="quick-actions">
+      <button class="btn" onclick="goTo('pets')">🐾 Cadastrar pet</button>
+      <button class="btn amber" onclick="goTo('benefits')">🎁 Ver benefícios</button>
+      <button class="btn ghost" onclick="goTo('loyalty')">⭐ Meus pontos</button>
+    </div>
+  `;
+}
+
+/* ---------------- PETS ---------------- */
+function renderPets(user){
+  const cards = user.pets.map(pet => `
+    <div class="card pet-card">
+      <div class="pet-avatar">${SPECIES_ICON[pet.species] || '🐾'}</div>
+      <div style="flex:1;">
+        <div class="pet-name">${pet.name}</div>
+        <div class="pet-meta">${pet.species} · ${pet.breed || 'raça não informada'} · porte ${pet.size}</div>
+        ${pet.notes ? `<div class="pet-meta">${pet.notes}</div>` : ''}
+        <div class="pet-actions">
+          <button class="btn ghost small" onclick="removePet('${pet.id}')">Remover</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="page-head">
+      <div class="eyebrow">Meus Pets</div>
+      <h2>Seus companheiros cadastrados</h2>
+      <p>Cadastre cada pet para acompanhar o histórico e acumular pontos nos atendimentos.</p>
+    </div>
+    <div class="quick-actions" style="margin-top:0;margin-bottom:20px;">
+      <button class="btn" onclick="openPetModal()">+ Cadastrar novo pet</button>
+    </div>
+    ${user.pets.length ? `<div class="grid cols-2">${cards}</div>` :
+      `<div class="empty-state">Você ainda não cadastrou nenhum pet.<br>Clique em "Cadastrar novo pet" para começar.</div>`}
+  `;
+}
+
+function openPetModal(){
+  const html = `
+    <div class="modal-backdrop" id="pet-modal-backdrop" onclick="if(event.target===this) closeModal()">
+      <div class="modal">
+        <div class="modal-head">
+          <h3 style="font-size:19px;">Cadastrar pet</h3>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <form onsubmit="return submitPet(event)">
+          <div class="field">
+            <label for="pet-name">Nome do pet</label>
+            <input id="pet-name" required placeholder="Ex: Thor">
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label for="pet-species">Espécie</label>
+              <select id="pet-species">
+                <option>Cachorro</option>
+                <option>Gato</option>
+                <option>Outro</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="pet-size">Porte</label>
+              <select id="pet-size">
+                <option>Pequeno</option>
+                <option>Médio</option>
+                <option>Grande</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="pet-breed">Raça (opcional)</label>
+            <input id="pet-breed" placeholder="Ex: SRD, Poodle, Persa...">
+          </div>
+          <div class="field">
+            <label for="pet-notes">Observações (opcional)</label>
+            <textarea id="pet-notes" rows="2" placeholder="Alergias, temperamento, cuidados especiais..."></textarea>
+          </div>
+          <button class="btn block" type="submit">Salvar pet</button>
+        </form>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function closeModal(){
+  const el = document.getElementById('pet-modal-backdrop');
+  if(el) el.remove();
+}
+
+function submitPet(e){
+  e.preventDefault();
+  const pet = {
+    id: cryptoId(),
+    name: document.getElementById('pet-name').value.trim(),
+    species: document.getElementById('pet-species').value,
+    size: document.getElementById('pet-size').value,
+    breed: document.getElementById('pet-breed').value.trim(),
+    notes: document.getElementById('pet-notes').value.trim(),
+  };
+  updateCurrentUser(u => u.pets.push(pet));
+  closeModal();
+  showToast(`${pet.name} foi cadastrado(a) com sucesso!`);
+  render();
+  return false;
+}
+
+function removePet(id){
+  updateCurrentUser(u => { u.pets = u.pets.filter(p => p.id !== id); });
+  render();
+}
+
+/* ---------------- HISTORY ---------------- */
+function renderHistory(user){
+  const rows = user.history.slice().reverse().map(h => `
+    <div class="history-row">
+      <div class="history-main">
+        <div class="h-title">${h.service}</div>
+        <div class="h-sub">${h.petName !== '—' ? h.petName + ' · ' : ''}${formatDate(h.date)}</div>
+      </div>
+      <div class="history-points ${h.points<0?'neg':''}">${h.points>0?'+':''}${h.points} pts</div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="page-head">
+      <div class="eyebrow">Histórico</div>
+      <h2>Histórico de atendimentos</h2>
+      <p>Todos os serviços realizados e as movimentações de pontos da sua conta.</p>
+    </div>
+    <div class="card">${rows || '<div class="empty-state">Nenhum atendimento registrado ainda.</div>'}</div>
+  `;
+}
+
+/* ---------------- LOYALTY ---------------- */
+function renderLoyalty(user){
+  const totalStamps = 10;
+  const filled = Math.min(totalStamps, Math.floor(user.points/20));
+  const stamps = Array.from({length: totalStamps}).map((_,i)=>
+    `<div class="stamp-cell ${i<filled?'on':''}">${i<filled?'🐾':''}</div>`
+  ).join('');
+
+  return `
+    <div class="page-head">
+      <div class="eyebrow">Fidelidade</div>
+      <h2>Seu cartão de pontos</h2>
+      <p>A cada atendimento você acumula pontos automaticamente. Junte pontos e troque por benefícios.</p>
+    </div>
+
+    <div class="loyalty-card">
+      <div style="font-size:13.5px;color:#D7E0D2;">Saldo atual</div>
+      <div class="loyalty-points">${user.points} pts</div>
+      <div style="font-size:13px;color:#D7E0D2;margin-top:4px;">Carimbo a cada 20 pontos acumulados</div>
+      <div class="stamp-grid">${stamps}</div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <strong style="font-size:14.5px;">Como ganhar pontos</strong>
+      <ul class="earn-list" style="margin-top:12px;">
+        <li><span>Banho</span><span>+15 pts</span></li>
+        <li><span>Tosa</span><span>+20 pts</span></li>
+        <li><span>Consulta veterinária</span><span>+30 pts</span></li>
+        <li><span>Vacina</span><span>+25 pts</span></li>
+        <li><span>Compra de produtos</span><span>+1 pt a cada R$ 5</span></li>
+        <li><span>Indicação de novo tutor</span><span>+40 pts</span></li>
+      </ul>
+    </div>
+  `;
+}
+
+/* ---------------- BENEFITS ---------------- */
+function renderBenefits(user){
+  const cards = BENEFITS.map(b => {
+    const canRedeem = user.points >= b.cost;
+    return `
+    <div class="card benefit-card">
+      <div class="benefit-cost">⭐ ${b.cost} pts</div>
+      <h3 style="font-size:16px;margin-bottom:8px;">${b.title}</h3>
+      <p>${b.desc}</p>
+      <button class="btn ${canRedeem?'amber':''}" ${canRedeem?'':'disabled'} style="margin-top:14px;"
+        onclick="redeemBenefit('${b.id}')">
+        ${canRedeem ? 'Resgatar' : `Faltam ${b.cost-user.points} pts`}
+      </button>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="page-head">
+      <div class="eyebrow">Benefícios</div>
+      <h2>Troque pontos por recompensas</h2>
+      <p>Você tem <strong>${user.points} pontos</strong> disponíveis para resgate.</p>
+    </div>
+    <div class="grid cols-3">${cards}</div>
+  `;
+}
+
+function redeemBenefit(id){
+  const benefit = BENEFITS.find(b=>b.id===id);
+  const user = currentUser();
+  if(!benefit || user.points < benefit.cost) return;
+  updateCurrentUser(u=>{
+    u.points -= benefit.cost;
+    u.history.push({ id:cryptoId(), date:new Date().toISOString().slice(0,10), petName:'—', service:`Resgate: ${benefit.title}`, points: -benefit.cost });
+    u.redemptions.push({ id:cryptoId(), title:benefit.title, date:new Date().toISOString().slice(0,10) });
+  });
+  showToast(`Benefício "${benefit.title}" resgatado!`);
+  render();
+}
+
+/* ---------------- TIPS ---------------- */
+function renderTips(){
+  const cards = TIPS.map(t => `
+    <div class="card tip-card">
+      <span class="ic">${t.ic}</span>
+      <h3>${t.title}</h3>
+      <p>${t.text}</p>
+    </div>
+  `).join('');
+  return `
+    <div class="page-head">
+      <div class="eyebrow">Dicas</div>
+      <h2>Cuidados para o dia a dia</h2>
+      <p>Orientações rápidas da nossa equipe para manter seu pet saudável e feliz.</p>
+    </div>
+    <div class="grid cols-3">${cards}</div>
+  `;
+}
+
+/* ---------------- ABOUT ---------------- */
+function renderAbout(){
+  return `
+    <div class="page-head">
+      <div class="eyebrow">Pet Shop</div>
+      <h2>Matilha Amiga</h2>
+      <p>Informações de contato, endereço e funcionamento.</p>
+    </div>
+    <div class="card">
+      <div class="about-row"><span class="ic">📍</span><div><div class="t">Endereço</div><div class="d">Rua das Flores, 245 — Contagem/MG</div></div></div>
+      <div class="about-row"><span class="ic">🕒</span><div><div class="t">Funcionamento</div><div class="d">Segunda a sábado, das 8h às 19h</div></div></div>
+      <div class="about-row"><span class="ic">📞</span><div><div class="t">Telefone / WhatsApp</div><div class="d">(31) 90000-0000</div></div></div>
+      <div class="about-row"><span class="ic">✉️</span><div><div class="t">E-mail</div><div class="d">contato@matilhaamiga.com.br</div></div></div>
+      <div class="about-row"><span class="ic">🛠️</span><div><div class="t">Serviços</div><div class="d">Banho, tosa, consultas veterinárias, vacinas e venda de produtos</div></div></div>
+    </div>
+    <p style="color:var(--ink-soft);font-size:12.5px;margin-top:14px;">
+      Edite estas informações diretamente em <code>renderAbout()</code> no arquivo <code>index.html</code> para refletir os dados reais do seu grupo/projeto.
+    </p>
+  `;
+}
+
+/* ---------------- BOOT ---------------- */
+function boot(){
+  const user = currentUser();
+  if(!user){
+    document.getElementById('view-auth').classList.remove('hidden');
+    document.getElementById('view-app').classList.add('hidden');
+    return;
+  }
+  document.getElementById('view-auth').classList.add('hidden');
+  document.getElementById('view-app').classList.remove('hidden');
+  buildNav();
+  render();
+}
+
+boot();
+</script>
+</body>
+</html>
