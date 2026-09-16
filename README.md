@@ -262,7 +262,7 @@ Profissional responsável pelo atendimento aos clientes e pela realização e re
 | RF-11 | A aplicação deve permitir ao cliente visualizar as regras do programa de fidelidade. | ALTA |
 | RF-12 | A aplicação deve permitir ao cliente visualizar dicas e informações sobre cuidados com seus animais de estimação. | BAIXA |
 | RF-13 | A aplicação deve permitir ao cliente atualizar seus dados cadastrais. | MÉDIA |
-| RF-14 | A aplicação deve disponibilizar informações de contato do pet shop. | BAIXA |
+| RF-14 | A aplicação deve disponibilizar informações de contato do pet shop. | BAIXA  | 
 
 ## 3.2 Requisitos Não Funcionais
 
