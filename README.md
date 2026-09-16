@@ -286,19 +286,17 @@ Profissional responsável pelo atendimento aos clientes e pela realização e re
 
 A equipe será responsável pelo desenvolvimento conjunto do projeto, com a divisão das atividades entre os integrantes.
 
-- **Geovana Gabriela Silva Fernandes** — [PREENCHER FUNÇÃO]
-- **Rafael Rodrigues C. Araujo** — [PREENCHER FUNÇÃO]
-- **Lucas** — [PREENCHER FUNÇÃO]
+- **Geovana Gabriela Silva Fernandes** — Product Owner
+- **Rafael Rodrigues C. Araujo** — Scrum Master
+- **Lucas** — Desenvolvedor
 
 > **Observação:** os papéis devem ser preenchidos de acordo com a função que cada integrante realmente exercerá no projeto.
 
 ## 4.2 Processo
 
-[PREENCHER COM A FORMA COMO A EQUIPE IRÁ TRABALHAR.]
+O projeto será desenvolvido de forma colaborativa, com a participação de todos os integrantes nas etapas de planejamento, desenvolvimento, testes e validação. O gerenciamento das atividades será realizado pelo GitHub, onde serão registradas, atualizadas e acompanhadas as tarefas e alterações do projeto.
 
-A equipe deverá organizar as atividades do projeto, acompanhar o desenvolvimento das tarefas, realizar revisões e manter a documentação atualizada no repositório do GitHub.
-
-O processo deverá contemplar a definição das atividades, distribuição das tarefas entre os integrantes, desenvolvimento, revisão e atualização da documentação.
+Serão realizadas reuniões periódicas de alinhamento para acompanhar o andamento das atividades, discutir dificuldades, definir responsabilidades e realizar os ajustes necessários. Dessa forma, busca-se garantir uma comunicação eficiente e a integração entre as diferentes partes do projeto.
 
 ## 4.3 Ferramentas
 
@@ -319,7 +317,8 @@ O User Flow representará o caminho percorrido pelo usuário dentro da aplicaç�
 
 O fluxo deverá contemplar as principais funcionalidades previstas no projeto, como acesso à aplicação, cadastro/login, cadastro do pet, consulta de informações, programa de fidelidade, consulta de pontos e resgate de benefícios.
 
-**[INSERIR AQUI O USER FLOW DA EQUIPE]**
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/e1680e9f-d982-4799-bcf7-57197fcb358f" />
+
 
 ---
 
@@ -344,7 +343,8 @@ Entre as telas relacionadas às funcionalidades previstas estão:
 
 **Protótipo no Figma:**
 
-[PREENCHER COM O LINK DO FIGMA]
+<img width="1800" height="1150" alt="image" src="https://github.com/user-attachments/assets/7b070667-8aa4-451b-a80a-1e1552da768a" />
+
 
 ---
 
